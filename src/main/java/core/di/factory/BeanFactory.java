@@ -47,14 +47,17 @@ public class BeanFactory {
             return beans.get(preInstanticateBean);
         }
 
+        this.beanInitializeHistory.push(preInstanticateBean);
+        final Object instance = instantiateWith(preInstanticateBean);
+        this.beanInitializeHistory.pop();
+        return instance;
+    }
+
+    private Object instantiateWith(Class<?> preInstanticateBean) {
         final Constructor<?> injectedConstructor = BeanFactoryUtils.getInjectedConstructor(preInstanticateBean);
         if (injectedConstructor == null) {
-            final Object instance = BeanUtils.instantiateClass(preInstanticateBean);
-            this.beans.put(preInstanticateBean, instance);
-            return instance;
+            return instantiateWithDefaultConstructor(preInstanticateBean);
         }
-
-        this.beanInitializeHistory.push(preInstanticateBean);
 
         final Class<?>[] parameterTypes = injectedConstructor.getParameterTypes();
         final Object[] parametersInstances = new Object[parameterTypes.length];
@@ -65,8 +68,13 @@ public class BeanFactory {
 
         final Object instance = BeanUtils.instantiateClass(injectedConstructor, parametersInstances);
         this.beans.put(preInstanticateBean, instance);
+        return instance;
+    }
 
-        this.beanInitializeHistory.pop();
+    private Object instantiateWithDefaultConstructor(Class<?> preInstanticateBean) {
+        final Object instance = BeanUtils.instantiateClass(preInstanticateBean);
+
+        this.beans.put(preInstanticateBean, instance);
         return instance;
     }
 
