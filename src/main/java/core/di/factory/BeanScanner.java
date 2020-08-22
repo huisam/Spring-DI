@@ -8,27 +8,52 @@ import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
 
+import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class BeanScanner {
 
+    public static final String ANNOTATION_BASE_PACKAGE = "core.annotation";
     public static final Class<WebApplication> WEB_APPLICATION_CLASS = WebApplication.class;
+    public static final Class<Component> COMPONENT_ANNOTATION = Component.class;
 
     private Object[] basePackages;
     private Reflections reflections;
 
-    public void initialize() {
+    public Set<Class<?>> scan() {
+        this.basePackages = findBasePackages();
+        this.reflections = new Reflections(basePackages, new TypeAnnotationsScanner(), new SubTypesScanner(), new MethodAnnotationsScanner());
+
+        final Set<Class<? extends Annotation>> componentAnnotations = getComponentAnnotations();
+        return getTypeAnnotatedWith(componentAnnotations);
+    }
+
+    private Set<Class<? extends Annotation>> getComponentAnnotations() {
+        final Reflections annotationReflections = new Reflections(ANNOTATION_BASE_PACKAGE);
+        final Set<Class<?>> componentClasses = annotationReflections.getTypesAnnotatedWith(COMPONENT_ANNOTATION);
+
+        final Set<Class<? extends Annotation>> annotations = componentClasses.stream()
+                .filter(Class::isAnnotation)
+                .map(clazz -> (Class<? extends Annotation>) clazz)
+                .collect(Collectors.toSet());
+        annotations.add(COMPONENT_ANNOTATION);
+        return annotations;
+    }
+
+    private Object[] findBasePackages() {
         Reflections allReflections = new Reflections("");
-        this.basePackages = allReflections.getTypesAnnotatedWith(WEB_APPLICATION_CLASS)
+        Object[] allBasePackages = allReflections.getTypesAnnotatedWith(WEB_APPLICATION_CLASS)
                 .stream()
                 .map(this::findBasePackages)
                 .flatMap(Arrays::stream)
                 .toArray();
 
-        if (basePackages.length == 0) {
+        if (allBasePackages.length == 0) {
             throw new IllegalStateException("Base package is not initialized");
         }
+        return allBasePackages;
     }
 
     private String[] findBasePackages(Class<?> clazz) {
@@ -37,18 +62,11 @@ public class BeanScanner {
         return basePackages.length == 0 ? new String[]{clazz.getPackage().getName()} : basePackages;
     }
 
-    public Set<Class<?>> scan() {
-        this.reflections = new Reflections(basePackages, new TypeAnnotationsScanner(), new SubTypesScanner(), new MethodAnnotationsScanner());
-
-        return getTypeAnnotatedWith(Component.class);
-    }
-
-    @SafeVarargs
-    private final Set<Class<?>> getTypeAnnotatedWith(Class<Component>... annotations) {
-        Set<Class<?>> beans = Sets.newHashSet();
-        for (Class<Component> annotation : annotations) {
-            beans.addAll(reflections.getTypesAnnotatedWith(annotation));
+    private Set<Class<?>> getTypeAnnotatedWith(Set<Class<? extends Annotation>> annotations) {
+        Set<Class<?>> annotatedClass = Sets.newHashSet();
+        for (Class<? extends Annotation> annotation : annotations) {
+            annotatedClass.addAll(reflections.getTypesAnnotatedWith(annotation));
         }
-        return beans;
+        return annotatedClass;
     }
 }
