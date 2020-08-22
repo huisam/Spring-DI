@@ -66,4 +66,12 @@ public class NsWebTestClient {
     public static NsWebTestClient of(String baseUrl, int port) {
         return new NsWebTestClient(baseUrl, port);
     }
+
+    public void deleteResource(URI location) {
+        testClientBuilder.build()
+                .delete()
+                .uri(location.toString())
+                .exchange()
+                .expectStatus().isOk();
+    }
 }

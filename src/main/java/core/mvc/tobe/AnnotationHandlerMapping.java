@@ -41,7 +41,6 @@ public class AnnotationHandlerMapping implements HandlerMapping {
 
     public AnnotationHandlerMapping() {
         beanScanner = new BeanScanner();
-        beanScanner.initialize();
         final Set<Class<?>> preInstantiateBeans = beanScanner.scan();
 
         beanFactory = new BeanFactory(preInstantiateBeans);
@@ -56,7 +55,7 @@ public class AnnotationHandlerMapping implements HandlerMapping {
         for (Object controller : controllerInstances) {
             addHandlerExecutions(handlers, controller, controller.getClass().getMethods());
         }
-        handlers.putAll(handlers);
+        handlerExecutions.putAll(handlers);
     }
 
     private void addHandlerExecutions(Map<HandlerKey, HandlerExecution> handlers, Object target, Method[] methods) {
