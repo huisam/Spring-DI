@@ -1,10 +1,13 @@
 package core.di.factory;
 
 import com.google.common.collect.Maps;
+import core.di.factory.abnormal.CircularReferenceException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 
 import java.lang.reflect.Constructor;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Map;
 import java.util.Set;
 
@@ -13,6 +16,8 @@ public class BeanFactory {
     private Set<Class<?>> preInstanticateBeans;
 
     private Map<Class<?>, Object> beans = Maps.newHashMap();
+
+    private Deque<Class<?>> beanInitializeHistory = new ArrayDeque<>();
 
     public BeanFactory(Set<Class<?>> preInstanticateBeans) {
         this.preInstanticateBeans = preInstanticateBeans;
@@ -30,6 +35,10 @@ public class BeanFactory {
     }
 
     private Object instantiate(Class<?> preInstanticateBean) {
+        if (beanInitializeHistory.contains(preInstanticateBean)) {
+            throw new CircularReferenceException("Circular Reference can't add to Bean Factory: " + preInstanticateBean.getSimpleName());
+        }
+
         if (beans.containsKey(preInstanticateBean)) {
             return beans.get(preInstanticateBean);
         }
@@ -41,6 +50,8 @@ public class BeanFactory {
             return instance;
         }
 
+        this.beanInitializeHistory.push(preInstanticateBean);
+
         final Class<?>[] parameterTypes = injectedConstructor.getParameterTypes();
         final Object[] parametersInstances = new Object[parameterTypes.length];
         for (int i = 0; i < parametersInstances.length; i++) {
@@ -50,6 +61,8 @@ public class BeanFactory {
 
         final Object instance = BeanUtils.instantiateClass(injectedConstructor, parametersInstances);
         this.beans.put(preInstanticateBean, instance);
+
+        this.beanInitializeHistory.pop();
         return instance;
     }
 }
