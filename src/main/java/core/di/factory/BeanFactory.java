@@ -5,11 +5,13 @@ import core.di.factory.abnormal.CircularReferenceException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class BeanFactory {
@@ -33,6 +35,8 @@ public class BeanFactory {
             instantiate(preInstanticateBean);
         }
     }
+
+
 
     private Object instantiate(Class<?> preInstanticateBean) {
         if (beanInitializeHistory.contains(preInstanticateBean)) {
@@ -64,5 +68,11 @@ public class BeanFactory {
 
         this.beanInitializeHistory.pop();
         return instance;
+    }
+
+    public Set<Object> getBeansAnnotatedWith(Class<? extends Annotation> annotation) {
+        return this.beans.values().stream()
+                .filter(bean -> bean.getClass().isAnnotationPresent(annotation))
+                .collect(Collectors.toSet());
     }
 }
