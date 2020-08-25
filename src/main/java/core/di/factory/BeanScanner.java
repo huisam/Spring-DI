@@ -3,6 +3,7 @@ package core.di.factory;
 import com.google.common.collect.Sets;
 import core.annotation.Component;
 import core.annotation.WebApplication;
+import org.apache.commons.lang3.ArrayUtils;
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.scanners.SubTypesScanner;
@@ -21,6 +22,10 @@ public class BeanScanner {
 
     private Object[] basePackages;
     private Reflections reflections;
+
+    public BeanScanner(Object... basePackages) {
+        this.basePackages = basePackages;
+    }
 
     public Set<Class<?>> scan() {
         this.basePackages = findBasePackages();
@@ -43,6 +48,10 @@ public class BeanScanner {
     }
 
     private Object[] findBasePackages() {
+        if (ArrayUtils.isNotEmpty(this.basePackages)) {
+            return this.basePackages;
+        }
+
         Reflections allReflections = new Reflections("");
         Object[] allBasePackages = allReflections.getTypesAnnotatedWith(WEB_APPLICATION_CLASS)
                 .stream()
@@ -65,7 +74,7 @@ public class BeanScanner {
     private Set<Class<?>> getTypeAnnotatedWith(Set<Class<? extends Annotation>> annotations) {
         Set<Class<?>> annotatedClass = Sets.newHashSet();
         for (Class<? extends Annotation> annotation : annotations) {
-            annotatedClass.addAll(reflections.getTypesAnnotatedWith(annotation));
+            annotatedClass.addAll(reflections.getTypesAnnotatedWith(annotation, true));
         }
         return annotatedClass;
     }
