@@ -7,6 +7,6 @@ import java.lang.annotation.Target;
 
 @Target(value = ElementType.TYPE)
 @Retention(value = RetentionPolicy.RUNTIME)
+@ComponentScan
 public @interface WebApplication {
-    String[] basePackages() default {};
 }
