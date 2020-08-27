@@ -47,7 +47,7 @@ public class BeanScanner implements Scanner<Class<?>> {
     }
 
     public Class<?> findConcreteClass(Class<?> preInstantiateBean) {
-        return BeanFactoryUtils.findConcreteClass(preInstantiateBean, preInstantiateBeans);
+        return BeanInstantiateUtils.findConcreteClass(preInstantiateBean, preInstantiateBeans);
     }
 
     private Set<Class<?>> getTypeAnnotatedWith(Set<Class<? extends Annotation>> annotations) {

@@ -55,4 +55,12 @@ public class ConfigurationBeanScanner implements Scanner<Class<?>> {
 
         this.beanCreationMethods.put(beanType, beanMethod);
     }
+
+    public Method getBeanCreationMethod(Class<?> preInstantiateBean) {
+        return this.beanCreationMethods.get(preInstantiateBean);
+    }
+
+    public boolean contains(Class<?> preInstantiateBean) {
+        return this.beanCreationMethods.containsKey(preInstantiateBean);
+    }
 }

@@ -54,7 +54,7 @@ public class BeanFactory {
     }
 
     private Object instantiateWith(Class<?> preInstanticateBean) {
-        final Constructor<?> injectedConstructor = BeanFactoryUtils.getInjectedConstructor(preInstanticateBean);
+        final Constructor<?> injectedConstructor = BeanInstantiateUtils.getInjectedConstructor(preInstanticateBean);
         if (injectedConstructor == null) {
             return instantiateWithDefaultConstructor(preInstanticateBean);
         }
@@ -62,7 +62,7 @@ public class BeanFactory {
         final Class<?>[] parameterTypes = injectedConstructor.getParameterTypes();
         final Object[] parametersInstances = new Object[parameterTypes.length];
         for (int i = 0; i < parametersInstances.length; i++) {
-            final Class<?> concreteParameterTypes = BeanFactoryUtils.findConcreteClass(parameterTypes[i], preInstanticateBeans);
+            final Class<?> concreteParameterTypes = BeanInstantiateUtils.findConcreteClass(parameterTypes[i], preInstanticateBeans);
             parametersInstances[i] = instantiate(concreteParameterTypes);
         }
 
