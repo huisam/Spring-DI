@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor
-public class BeanScanner {
+public class BeanScanner implements Scanner<Class<?>> {
 
     public static final String ANNOTATION_BASE_PACKAGE = "core.annotation";
     public static final Class<Component> COMPONENT_ANNOTATION = Component.class;
@@ -23,6 +23,7 @@ public class BeanScanner {
         this.reflections = new Reflections(basePackages);
     }
 
+    @Override
     public Set<Class<?>> scan() {
         final Set<Class<? extends Annotation>> componentAnnotations = getComponentAnnotations();
         this.preInstantiateBeans = getTypeAnnotatedWith(componentAnnotations);
