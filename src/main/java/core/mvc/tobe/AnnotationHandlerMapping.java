@@ -5,11 +5,10 @@ import com.google.common.collect.Maps;
 import core.annotation.web.Controller;
 import core.annotation.web.RequestMapping;
 import core.annotation.web.RequestMethod;
-import core.di.factory.*;
+import core.di.ApplicationContext;
 import core.mvc.HandlerMapping;
 import core.mvc.tobe.support.*;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.core.ParameterNameDiscoverer;
 
@@ -33,27 +32,18 @@ public class AnnotationHandlerMapping implements HandlerMapping {
 
     private static final ParameterNameDiscoverer NAME_DISCOVERER = new LocalVariableTableParameterNameDiscoverer();
     public static final Class<Controller> HANDLER_ANNOTATION = Controller.class;
-    private BeanFactory beanFactory;
+    private ApplicationContext applicationContext;
 
     private Map<HandlerKey, HandlerExecution> handlerExecutions = Maps.newHashMap();
 
-    public AnnotationHandlerMapping(Object... basePackage) {
-        if (ArrayUtils.isEmpty(basePackage)) {
-            final ComponentBasePackageScanner componentBasePackageScanner = new ComponentBasePackageScanner(basePackage);
-            basePackage = componentBasePackageScanner.scan().toArray();
-        }
-
-        BeanScanner beanScanner = new BeanScanner(basePackage);
-        final ConfigurationBeanScanner configurationBeanScanner = new ConfigurationBeanScanner(basePackage);
-        final BeanScanners beanScanners = new BeanScanners(beanScanner, configurationBeanScanner);
-
-        beanFactory = new BeanFactory(beanScanners);
-        beanFactory.initialize();
+    public AnnotationHandlerMapping(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
     }
+
 
     public void initialize() {
         log.info("## Initialized Annotation Handler Mapping");
-        final Set<Object> controllerInstances = beanFactory.getBeansAnnotatedWith(HANDLER_ANNOTATION);
+        final Set<Object> controllerInstances = applicationContext.getBeansAnnotatedWith(HANDLER_ANNOTATION);
 
         Map<HandlerKey, HandlerExecution> handlers = Maps.newHashMap();
         for (Object controller : controllerInstances) {

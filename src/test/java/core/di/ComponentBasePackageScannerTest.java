@@ -1,4 +1,4 @@
-package core.di.factory;
+package core.di;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

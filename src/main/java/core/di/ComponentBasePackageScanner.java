@@ -1,4 +1,4 @@
-package core.di.factory;
+package core.di;
 
 import core.annotation.AnnotationScanner;
 import core.annotation.ComponentScan;
@@ -23,7 +23,7 @@ public class ComponentBasePackageScanner implements Scanner<Object> {
     }
 
     @Override
-    public Set<Object> scan() {
+    public Set<Object> scan(Object... object) {
         final AnnotationScanner annotationScanner = new AnnotationScanner();
         final Set<Class<? extends Annotation>> scannedAnnotations = annotationScanner.scan(COMPONENT_SCAN_ANNOTATION);
 

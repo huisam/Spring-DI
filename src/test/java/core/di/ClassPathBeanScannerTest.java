@@ -1,5 +1,6 @@
-package core.di.factory;
+package core.di;
 
+import core.di.factory.DefaultBeanFactory;
 import core.di.factory.example.JdbcQuestionRepository;
 import core.di.factory.example.JdbcUserRepository;
 import core.di.factory.example.MyQnaService;
@@ -11,16 +12,16 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class BeanScannerTest {
+class ClassPathBeanScannerTest {
 
     @Test
     @DisplayName("BeanScanner 가 제대로 스캔하는지 테스트")
     void test_bean_scanner() {
         /* given */
-        BeanScanner beanScanner = new BeanScanner("core.di.factory.example");
+        ClassPathBeanScanner classPathBeanScanner = new ClassPathBeanScanner(new DefaultBeanFactory());
 
         /* when */
-        final Set<Class<?>> preInstantiateClazz = beanScanner.scan();
+        final Set<Class<?>> preInstantiateClazz = classPathBeanScanner.scan("core.di.factory.example");
 
         /* then */
         assertThat(preInstantiateClazz).hasSize(4);
