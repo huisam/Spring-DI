@@ -1,12 +1,10 @@
 package core.di.factory.abnormal;
 
 import core.di.factory.BeanFactory;
-import core.di.factory.BeanScanner;
+import core.di.factory.BeanScanners;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -16,9 +14,8 @@ class CircularDependencyTest {
 
     @BeforeEach
     void setUp() {
-        BeanScanner beanScanner = new BeanScanner("core.di.factory.abnormal");
-        final Set<Class<?>> preInstantiateClazz = beanScanner.scan();
-        beanFactory = new BeanFactory(preInstantiateClazz);
+        final BeanScanners beanScanners = new BeanScanners("core.di.factory.abnormal");
+        beanFactory = new BeanFactory(beanScanners);
     }
 
     @Test

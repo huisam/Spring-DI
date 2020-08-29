@@ -82,4 +82,12 @@ public class BeanScanners implements Scanner<Class<?>> {
     private boolean containsOnBeanScanner(Class<?> preInstantiateBean) {
         return beanScanner.contains(preInstantiateBean);
     }
+
+    public Class<?> findConcreteClass(Class<?> preInstantiateBean) {
+        if (beanScanner.contains(preInstantiateBean)) {
+            return beanScanner.findConcreteClass(preInstantiateBean);
+        }
+
+        return preInstantiateBean;
+    }
 }

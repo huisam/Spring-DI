@@ -5,8 +5,6 @@ import core.di.factory.example.QnaController;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Set;
-
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class BeanFactoryTest {
@@ -14,10 +12,9 @@ public class BeanFactoryTest {
 
     @BeforeEach
     public void setup() {
-        BeanScanner beanScanner = new BeanScanner("core.di.factory.example");
-        final Set<Class<?>> preInstantiateClazz = beanScanner.scan();
+        BeanScanners beanScanners = new BeanScanners("core.di.factory.example");
 
-        beanFactory = new BeanFactory(preInstantiateClazz);
+        beanFactory = new BeanFactory(beanScanners);
         beanFactory.initialize();
     }
 
