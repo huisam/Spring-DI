@@ -1,4 +1,4 @@
-package core.di.factory.abnormal;
+package core.di.factory.abnormal.config;
 
 import core.annotation.web.Controller;
 

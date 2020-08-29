@@ -1,4 +1,4 @@
-package core.di.factory.abnormal;
+package core.di.factory.abnormal.circular;
 
 import core.annotation.Inject;
 import core.annotation.web.Controller;

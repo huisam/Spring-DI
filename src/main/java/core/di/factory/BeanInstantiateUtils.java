@@ -47,7 +47,7 @@ public class BeanInstantiateUtils {
             }
         }
 
-        throw new IllegalStateException(injectedClazz + "인터페이스를 구현하는 Bean이 존재하지 않는다.");
+        return injectedClazz;
     }
 
     public static Object invokeMethod(Method method, Object... args) {
