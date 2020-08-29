@@ -24,8 +24,8 @@ public class ComponentBasePackageScanner implements Scanner<Object> {
 
     @Override
     public Set<Object> scan() {
-        final AnnotationScanner annotationScanner = new AnnotationScanner(COMPONENT_SCAN_ANNOTATION);
-        final Set<Class<? extends Annotation>> scannedAnnotations = annotationScanner.scan();
+        final AnnotationScanner annotationScanner = new AnnotationScanner();
+        final Set<Class<? extends Annotation>> scannedAnnotations = annotationScanner.scan(COMPONENT_SCAN_ANNOTATION);
 
         final Set<Class<?>> classesAnnotatedComponentScan = allReflections.getTypesAnnotatedWith(COMPONENT_SCAN_ANNOTATION, true);
 
